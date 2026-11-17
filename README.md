@@ -10,6 +10,16 @@ Interaktive Karte zum Netzwerk der Identitären Bewegung. Grundlage ist die Rech
 | Datenbank | PostgreSQL 16 | über Docker Compose |
 | Startdaten | Orte, Zuordnungen, Regeln (JSON) | `seed/` |
 
+## Schnellstart unter Windows (ohne Docker)
+
+1. `scripts/windows/einrichten.ps1` herunterladen.
+2. Rechtsklick → **Mit PowerShell ausführen**. Windows-Abfragen (Installation, Administratorrechte) bestätigen;
+   beim ersten Mal öffnet sich ein GitHub-Login im Browser.
+3. Das Skript installiert fehlende Programme (Git, .NET 10, Node.js, PostgreSQL 16), holt beide Repos nach
+   `%USERPROFILE%\IB-Karte`, legt die Datenbank an, importiert die Daten und startet die Karte.
+4. Später reicht ein Doppelklick auf **IB-Karte starten** auf dem Desktop (startet `starten.bat`).
+   Neue Recherchedaten: das Einrichtungsskript erneut ausführen.
+
 ## Schnellstart (lokal mit Docker)
 
 ```bash
