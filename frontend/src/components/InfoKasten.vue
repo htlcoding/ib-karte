@@ -39,7 +39,7 @@ const name = (id: string) => props.netz.eintrag.get(id)!.name
 
 <template>
   <article class="kasten">
-    <header class="kopf">
+    <header class="kopf ziehgriff" title="Zum Verschieben ziehen">
       <EintragBild :eintrag="eintrag" :farbe="netz.farbe(eintrag)" />
       <div>
         <h3>{{ eintrag.name }}</h3>
@@ -49,6 +49,8 @@ const name = (id: string) => props.netz.eintrag.get(id)!.name
 
     <p class="text">{{ absatz }}</p>
     <button v-if="kannMehr" class="mehr" type="button" @click="ganz = !ganz">{{ ganz ? 'Weniger anzeigen' : 'Weiterlesen' }}</button>
+
+    <p v-if="eintrag.ortGrund" class="leise standort">Standort auf der Karte: {{ eintrag.ortGrund }}.</p>
 
     <h4>Verbindungen</h4>
     <p v-if="!gruppen.length" class="leise">Keine belegten Verbindungen.</p>

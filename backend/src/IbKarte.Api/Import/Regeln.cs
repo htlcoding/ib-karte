@@ -18,7 +18,7 @@ public record AmtRegel(string Muster, string Ort, string Grund);
 public record StadtDef(string Name, string Ort);
 public record RegelnSeed(string ZentrumId, List<UmfeldDef> Umfelder, string FirmaMuster, List<string> KeineFirma,
     List<FormRegel> Formen, List<AmtRegel> Amt, string RolleMuster, string AmtAusschlussVorher, int AmtMaxPosition,
-    List<StadtDef>? Staedte = null);
+    List<StadtDef>? Staedte = null, Dictionary<string, string>? Hauptorte = null);
 
 /// <summary>Alle Startdaten aus dem seed-Verzeichnis.</summary>
 public class Startdaten
@@ -118,7 +118,8 @@ public class PersonenPosition(RegelnSeed r)
     /// <param name="grad">Anzahl belegter Verbindungen je Eintrag</param>
     public (string Ort, string Grund)? Bestimme(Knoten person, IReadOnlyList<Kante> kanten,
         IReadOnlyDictionary<string, Knoten> knoten, IReadOnlyDictionary<string, string> ortVon,
-        IReadOnlyDictionary<string, string> genauigkeit, IReadOnlyDictionary<string, int> grad)
+        IReadOnlyDictionary<string, string> genauigkeit, IReadOnlyDictionary<string, int> grad,
+        Func<string, bool>? imHeimatland = null)
     {
         // 1. Mandat im Infotext (nur am Anfang, nicht bei Mitarbeitern, Interviews o. Ä.)
         foreach (var (rx, ort, grund) in _amt)
@@ -160,10 +161,21 @@ public class PersonenPosition(RegelnSeed r)
             punkte[k.Partner] += knoten[k.Partner].Typ is "org" or "medium" ? 3 : 1;
         }
         if (reihenfolge.Count == 0) return null;
+        // Orte im Heimatland der Person haben Vorrang (z. B. kein Tiroler Verein für einen deutschen Aktivisten).
+        if (imHeimatland is not null && reihenfolge.Any(x => imHeimatland(ortVon[x])))
+            reihenfolge = reihenfolge.Where(x => imHeimatland(ortVon[x])).ToList();
         var beste = reihenfolge[0];
         foreach (var x in reihenfolge.Skip(1))
             if ((punkte[x], grad.GetValueOrDefault(x)).CompareTo((punkte[beste], grad.GetValueOrDefault(beste))) > 0) beste = x;
         return Verfeinern(person, "", (ortVon[beste], $"keine Funktion mit Ort belegt – symbolisch beim Eintrag „{knoten[beste].Name}“, mit dem die meisten Verbindungen bestehen"), genauigkeit);
+    }
+
+    /// <summary>Erste Stadt aus den Startdaten, die im Text vorkommt und den Filter erfüllt.</summary>
+    public (string Ort, string Name)? StadtIn(string text, Func<string, bool> passt)
+    {
+        foreach (var (rx, name, ort) in _staedte)
+            if (passt(ort) && rx.IsMatch(text)) return (ort, name);
+        return null;
     }
 
     /// <summary>

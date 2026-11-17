@@ -68,23 +68,39 @@ public class RegelnTests
 
         var regeln = new EintragsRegeln(seed.Regeln);
         var knoten = netz.Nodes.ToDictionary(n => n.Id, n => new PersonenPosition.Knoten(n.Id, n.Name, n.Typ, regeln.Gruppe(n.Id, n.Typ, n.Name, n.Gruppe), n.Info));
-        var adj = knoten.Keys.ToDictionary(k => k, _ => new List<PersonenPosition.Kante>());
-        foreach (var e in netz.Edges.Where(e => e.Status == "belegt" && knoten.ContainsKey(e.Von) && knoten.ContainsKey(e.Nach)))
-        { adj[e.Von].Add(new(e.Nach, e.Label)); adj[e.Nach].Add(new(e.Von, e.Label)); }
-        var grad = adj.ToDictionary(x => x.Key, x => x.Value.Count);
-        var ortVon = seed.Zuordnung.Where(z => knoten.ContainsKey(z.Key)).ToDictionary(z => z.Key, z => z.Value);
+        var belegt = netz.Edges.Where(e => e.Status == "belegt" && knoten.ContainsKey(e.Von) && knoten.ContainsKey(e.Nach))
+            .Select(e => new Verortung.Kante(e.Von, e.Nach, e.Label, klass.Art(e.Label))).ToList();
         var gen = seed.Orte.ToDictionary(o => o.Key, o => o.Genauigkeit);
-        var pos = new PersonenPosition(seed.Regeln);
-        var abw = new List<string>();
-        foreach (var p in refJ.GetProperty("personen").EnumerateObject())
-        {
-            var r = pos.Bestimme(knoten[p.Name], adj[p.Name], knoten, ortVon, gen, grad);
-            if (r?.Ort != p.Value.GetString()) abw.Add($"{p.Name}: erwartet {p.Value}, war {r?.Ort}");
-        }
-        Assert.True(abw.Count == 0, string.Join("\n", abw));
+        var v = Verortung.Berechne(knoten, belegt, seed.Zuordnung, seed.Orte.ToDictionary(o => o.Key, o => (o.Genauigkeit, o.Land)), new PersonenPosition(seed.Regeln), seed.Regeln.Hauptorte);
 
         // Nächster zuordenbarer Ort: Bezirksmandat schlägt Landesebene.
-        if (knoten.ContainsKey("greiner"))
-            Assert.Equal("amtshaus-brigittenau", pos.Bestimme(knoten["greiner"], adj["greiner"], knoten, ortVon, gen, grad)?.Ort);
+        if (knoten.ContainsKey("greiner")) Assert.Equal("amtshaus-brigittenau", v.Ort["greiner"]);
+
+        // Sinnvolle Orte: kein deutscher Eintrag in Österreich und umgekehrt, wenn das Heimatland bekannt ist.
+        var orteSeed = seed.Orte.ToDictionary(o => o.Key);
+        var offen = new List<string>();
+        string[] flaecheAlt = ["land", "region", "aussen"];
+        foreach (var k in knoten.Values)
+        {
+            if (!v.Ort.TryGetValue(k.Id, out var o)) continue;
+            var start = k.Typ == "person" ? Verortung.Heimatland(k.Gruppe) : seed.Zuordnung.TryGetValue(k.Id, out var z) ? Verortung.Staat(orteSeed[z].Land) : null;
+            var jetzt = Verortung.Staat(orteSeed[o].Land);
+            if (start is "Deutschland" && jetzt is "Österreich" || start is "Österreich" && jetzt is "Deutschland")
+            {
+                // nur ein Fehler, wenn es eine belegte Verbindung mit Ort im Heimatland gäbe
+                var imHeimatland = belegt.Where(e => e.Von == k.Id || e.Nach == k.Id).Select(e => e.Von == k.Id ? e.Nach : e.Von)
+                    .Any(p => v.Ort.TryGetValue(p, out var po) && Verortung.Staat(orteSeed[po].Land) == start && !flaecheAlt.Contains(gen[po]));
+                if (imHeimatland && v.Grund.TryGetValue(k.Id, out var g) && g.StartsWith("kein")) offen.Add($"{k.Id}: {start} → {o}");
+            }
+        }
+        Assert.True(offen.Count == 0, "Ort im falschen Land: " + string.Join(", ", offen));
+
+        // Kein Eintrag bleibt auf Landes- oder Regionsebene (Ausnahme: Ereignisse auf See).
+        string[] flaeche = ["land", "region", "aussen"];
+        var flaechig = v.Ort.Where(x => flaeche.Contains(gen[x.Value]) && orteSeed[x.Value].Land?.StartsWith("Mittelmeer") != true).Select(x => x.Key).ToList();
+        Assert.True(flaechig.Count == 0, "Noch ohne bestimmten Ort: " + string.Join(", ", flaechig));
+        Assert.Equal("afd-bundesgeschaeftsstelle", v.Ort["afd"]);
+        Assert.Equal("rfj-bundesorganisation", v.Ort["fj"]);
+        Assert.NotEqual("afd-bundesgeschaeftsstelle", v.Ort["ibd"]);
     }
 }

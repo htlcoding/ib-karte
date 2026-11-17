@@ -65,19 +65,28 @@ cd backend && dotnet test
 3. Die API baut daraus einen fertigen Kartendatenstand (`GET /api/karte`), hält ihn im Speicher und liefert ihn
    komprimiert mit ETag aus.
 
-### Personen auf der Karte
+### Wo ein Eintrag auf der Karte steht
 
-Personen stehen **nie an einer Wohn- oder Meldeadresse**, sondern symbolisch am nächstliegenden Ort, der sich
-aus einer belegten Funktion ergibt:
+Jeder Eintrag bekommt einen bestimmten Ort, nie nur „Österreich“ oder „Deutschland“:
 
-1. Mandat laut Datensatz: Parlament, Wiener Rathaus (Gemeinderat, Landtag, Stadtregierung), Bezirksvertretung,
-   Bundestag, EU-Parlament, Thüringer Landtag.
-2. Belegte Rolle bei einer Organisation mit Ort (z. B. Obmann eines Vereins).
-3. Sonst der Eintrag, mit dem die meisten Verbindungen bestehen.
-4. Landet eine Person so nur auf Landesebene, nennt ihre Funktion aber eine Stadt („FJ-Chef Wien“), steht sie in
-   dieser Stadt.
+1. **Organisationen, Medien, Ereignisse:** offizieller Sitz bzw. Veranstaltungsort aus `seed/orte.json` und
+   `seed/zuordnung.json` (mit Quelle, z. B. Impressum, Satzung, Register).
+2. **Kein Sitz belegt:** Ort eines verbundenen Eintrags – nur wenn dieser Ort selbst belegt ist, im selben Land
+   bzw. Bundesland liegt und die Verbindung tragfähig ist (Organisation/Adresse vor Geld vor Funktion,
+   Veranstaltung, Medien, Zusammenarbeit; „Indirekt / Umfeld“ zählt nur bei Ereignissen).
+3. **Letzte Stufe:** eine Stadt aus dem eigenen Infotext (im selben Land/Bundesland), sonst symbolisch die
+   Hauptstadt der Region (`hauptorte` in `seed/regeln.json`).
 
-Der Grund steht in der Datenbank (`eintraege.ort_grund`) und über `GET /api/eintraege/{id}`.
+Der Grund steht in `eintraege.ort_grund` und im Info-Kästchen („Standort auf der Karte: …“).
+
+**Personen** stehen **nie an einer Wohn- oder Meldeadresse**, sondern symbolisch:
+
+1. Mandat laut Datensatz: Parlament, Wiener Rathaus, Bezirksvertretung, Bundestag, Bayerischer/Thüringer Landtag,
+   EU-Parlament.
+2. Belegte Rolle bei einer Organisation mit Ort.
+3. Sonst der Eintrag mit den meisten Verbindungen – mit Vorrang für das Heimatland der Person
+   („Neue Rechte Deutschland“ → Deutschland, FPÖ/IBÖ → Österreich); nennt der Infotext eine Stadt im Heimatland,
+   gewinnt diese.
 
 ### Bilder und Logos
 
@@ -98,7 +107,7 @@ Symbol.
 
 | Methode | Pfad | Zweck |
 |---|---|---|
-| GET | `/api/karte` | Alles für die Karte (Einträge, Orte, Verbindungen, Farben, Arten) |
+| GET | `/api/karte` | Alles für die Karte (Einträge, Orte mit Adresse und Symbol, Verbindungen, Farben, Arten) |
 | GET | `/api/eintraege/{id}` | Ein Eintrag mit vollem Text, Ort und Belegen |
 | GET | `/api/suche?q=` | Suche über Namen und Orte |
 | POST | `/api/admin/import` | Neu importieren; nur aktiv, wenn `IMPORT_SCHLUESSEL` gesetzt ist (Header `X-Import-Schluessel`) |

@@ -8,6 +8,8 @@ import { ABSTAND, GROESSE, grundSymbole, markerAusBild, markerBild, registriere 
 import { abdeckung } from '../lib/geo'
 import InfoKasten from './InfoKasten.vue'
 import LinienKasten from './LinienKasten.vue'
+import OrtKasten from './OrtKasten.vue'
+import type { KarteOrt } from '../lib/typen'
 
 const props = defineProps<{ netz: Netz }>()
 const netz = props.netz
@@ -37,6 +39,11 @@ const linie = shallowRef<{ partner: string; art: string; liste: Nachbar[] } | nu
 const selEintrag = computed(() => (sel.value ? netz.eintrag.get(sel.value)! : null))
 let infoPopup: Popup | null = null
 let linienPopup: Popup | null = null
+let ortPopup: Popup | null = null
+const ortZiel = ref<HTMLElement | null>(null)
+const ortWahl = shallowRef<KarteOrt | null>(null)
+/** Vom Nutzer verschobener Versatz des Info-Kästchens (Pixel) */
+let zug = { x: 0, y: 0 }
 let tipp: Popup
 let wechsel = false
 const LEER: FeatureCollection = { type: 'FeatureCollection', features: [] }
@@ -84,7 +91,7 @@ function ortDaten(): FeatureCollection<Point> {
   return {
     type: 'FeatureCollection',
     features: netz.daten.orte.filter((o) => o.symbol).map((o) => ({
-      type: 'Feature', geometry: { type: 'Point', coordinates: [o.lon, o.lat] }, properties: { name: o.name, icon: 'ort-' + o.symbol },
+      type: 'Feature', geometry: { type: 'Point', coordinates: [o.lon, o.lat] }, properties: { name: o.name, icon: 'ort-' + o.symbol, key: o.key },
     })),
   }
 }
@@ -144,7 +151,7 @@ function hervorheben() {
 // ---------- Info-Kästchen ----------
 function popupVersatz(id: string): Offset {
   const o = versatz(id), e = netz.eintrag.get(id)!, r = (GROESSE[e.typ] / 2) * markerSkala(map.getZoom()) + 6
-  const p = (x: number, y: number): [number, number] => [o.x + x, o.y + y]
+  const p = (x: number, y: number): [number, number] => [o.x + x + zug.x, o.y + y + zug.y]
   return {
     center: p(0, 0), top: p(0, r), bottom: p(0, -r), left: p(r, 0), right: p(-r, 0),
     'top-left': p(r * 0.7, r * 0.7), 'top-right': p(-r * 0.7, r * 0.7), 'bottom-left': p(r * 0.7, -r * 0.7), 'bottom-right': p(-r * 0.7, -r * 0.7),
@@ -162,6 +169,29 @@ function einpassen(p: Popup | null) {
   else if (r.right > k.right - rand - 52) dx = r.right - k.right + rand + 52
   if (dx || dy) map.panBy([dx, dy], { duration: 250 })
 }
+/** Kästchen mit der Maus oder dem Finger verschieben (am Kopf bzw. an freien Stellen anfassen). */
+function ziehbar(popup: Popup, versatzNeu: (d: { x: number; y: number }) => Offset) {
+  const el = popup.getElement()
+  let start: { x: number; y: number; d: { x: number; y: number } } | null = null
+  const d = { x: 0, y: 0 }
+  el.addEventListener('pointerdown', (ev) => {
+    const t = ev.target as HTMLElement
+    if (t.closest('button, a, input, summary, .was, .text, li') && !t.closest('.ziehgriff')) return
+    start = { x: ev.clientX, y: ev.clientY, d: { ...d } }
+    el.setPointerCapture(ev.pointerId)
+    el.classList.add('zieht')
+    ev.preventDefault(); ev.stopPropagation()
+  })
+  el.addEventListener('pointermove', (ev) => {
+    if (!start) return
+    d.x = start.d.x + ev.clientX - start.x; d.y = start.d.y + ev.clientY - start.y
+    el.classList.add('verschoben')
+    popup.setOffset(versatzNeu(d))
+  })
+  const ende = (ev: PointerEvent) => { if (!start) return; start = null; el.classList.remove('zieht'); try { el.releasePointerCapture(ev.pointerId) } catch { /* schon frei */ } }
+  el.addEventListener('pointerup', ende); el.addEventListener('pointercancel', ende)
+}
+
 const beobachter = new ResizeObserver(() => {
   infoPopup?.setLngLat(infoPopup.getLngLat())
   linienPopup?.setLngLat(linienPopup.getLngLat())
@@ -174,6 +204,8 @@ function zeigeInfo(id: string) {
   infoPopup = new Popup({ closeOnClick: false, focusAfterOpen: false, maxWidth: mobil ? 'calc(100vw - 32px)' : '372px', offset: popupVersatz(id), className: 'info' })
     .setLngLat([l.lon, l.lat]).setDOMContent(div).addTo(map)
   infoPopup.on('close', () => { if (!wechsel) abwaehlen() })
+  zug = { x: 0, y: 0 }
+  ziehbar(infoPopup, (d) => { zug = d; return popupVersatz(id) })
   kastenZiel.value = div
   beobachter.observe(div)
   nextTick(() => requestAnimationFrame(() => einpassen(infoPopup)))
@@ -189,13 +221,30 @@ function zeigeLinie(key: string, wo: [number, number]) {
   linienPopup = new Popup({ closeOnClick: false, focusAfterOpen: false, maxWidth: mobil ? 'calc(100vw - 32px)' : '340px', offset: 10, className: 'info' })
     .setLngLat(wo).setDOMContent(div).addTo(map)
   linienZiel.value = div
+  ziehbar(linienPopup, (d) => [d.x, d.y + 10])
   beobachter.observe(div)
   nextTick(() => requestAnimationFrame(() => einpassen(linienPopup)))
+}
+
+function zeigeOrt(key: string) {
+  const o = netz.daten.orte.find((x) => x.key === key)
+  if (!o) return
+  wechsel = true; ortPopup?.remove(); wechsel = false
+  ortWahl.value = o
+  const div = document.createElement('div')
+  ortPopup = new Popup({ closeOnClick: false, focusAfterOpen: false, maxWidth: mobil ? 'calc(100vw - 32px)' : '340px', offset: 20, className: 'info' })
+    .setLngLat([o.lon, o.lat]).setDOMContent(div).addTo(map)
+  ortPopup.on('close', () => { if (!wechsel) { ortZiel.value = null; ortWahl.value = null } })
+  ortZiel.value = div
+  ziehbar(ortPopup, (d) => [d.x, d.y + 20])
+  beobachter.observe(div)
+  nextTick(() => requestAnimationFrame(() => einpassen(ortPopup)))
 }
 
 // ---------- Auswahl ----------
 function waehle(id: string, fliegen = false) {
   if (!netz.lage.has(id)) return
+  if (ortPopup) { wechsel = true; ortPopup.remove(); wechsel = false; ortPopup = null; ortZiel.value = null; ortWahl.value = null }
   sel.value = id
   linie.value = null
   hervorheben()
@@ -325,13 +374,15 @@ onMounted(() => {
   map.on('click', (ev) => {
     const p = map.queryRenderedFeatures(ev.point, { layers: PUNKTE.filter((l) => l !== 'orte') })
     if (p.length) { waehle(p[0].properties.id as string); return }
+    const g = map.queryRenderedFeatures(ev.point, { layers: ['orte'] })
+    if (g.length) { zeigeOrt(g[0].properties.key as string); return }
     const l = sel.value ? map.queryRenderedFeatures(ev.point, { layers: ['linien-treffer'] }) : []
     if (l.length) { zeigeLinie(l[0].properties.key as string, [ev.lngLat.lng, ev.lngLat.lat]); return }
     abwaehlen()
   })
   map.on('mousemove', (ev) => {
     const f: MapGeoJSONFeature[] = map.queryRenderedFeatures(ev.point, { layers: [...PUNKTE, ...(sel.value ? ['linien-treffer'] : [])] })
-    map.getCanvas().style.cursor = f.length && f[0].layer.id !== 'orte' ? 'pointer' : ''
+    map.getCanvas().style.cursor = f.length ? 'pointer' : ''
     if (!f.length) { tipp.remove(); return }
     const g = f[0], text = g.layer.id === 'linien-treffer' ? netz.eintrag.get(g.properties.partner as string)!.name : (g.properties.name as string)
     tipp.setLngLat(ev.lngLat).setText(text).addTo(map)
@@ -358,6 +409,9 @@ onBeforeUnmount(() => { window.removeEventListener('keydown', taste); beobachter
   <div ref="behaelter" class="karte" role="region" aria-label="Karte des Netzwerks"></div>
   <Teleport v-if="kastenZiel && selEintrag" :to="kastenZiel">
     <InfoKasten :eintrag="selEintrag" :netz="netz" @waehle="(id) => waehle(id, true)" />
+  </Teleport>
+  <Teleport v-if="ortZiel && ortWahl" :to="ortZiel">
+    <OrtKasten :ort="ortWahl" :netz="netz" @waehle="(id) => waehle(id, true)" />
   </Teleport>
   <Teleport v-if="linienZiel && linie && selEintrag" :to="linienZiel">
     <LinienKasten :a="selEintrag" :b="netz.eintrag.get(linie.partner)!" :art="linie.art" :liste="linie.liste" :netz="netz" />

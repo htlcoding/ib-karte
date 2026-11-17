@@ -10,7 +10,7 @@ const name = (id: string) => props.netz.eintrag.get(id)!.name
 
 <template>
   <article class="kasten linie">
-    <div class="paar">
+    <div class="paar ziehgriff" title="Zum Verschieben ziehen">
       <EintragBild :eintrag="a" :farbe="netz.farbe(a)" klein />
       <span class="strich" :style="{ borderTopColor: def.farbe, borderTopStyle: def.gestrichelt ? 'dashed' : 'solid' }"></span>
       <EintragBild :eintrag="b" :farbe="netz.farbe(b)" klein />

@@ -9,10 +9,10 @@ namespace IbKarte.Api.Karte;
 
 // Kompakte Darstellung für das Frontend. Bewusst ohne Quellen-Links (Gestaltungsentscheidung);
 // die Belege bleiben in der Datenbank und über /api/eintraege/{id} abrufbar.
-public record KarteOrt(string Key, string Name, double Lat, double Lon, string Genauigkeit, string? Symbol);
+public record KarteOrt(string Key, string Name, string? Adresse, double Lat, double Lon, string Genauigkeit, string? Symbol);
 public record Ausschnitt(double X, double Y, double Zoom);
 public record KarteEintrag(string Id, string Name, string Typ, string Umfeld, string Form, string Kurz, string? Ort,
-    string? OrtName, string? Bild, string? BildQuelle, Ausschnitt? Ausschnitt);
+    string? OrtName, string? OrtGrund, string? Bild, string? BildQuelle, Ausschnitt? Ausschnitt);
 public record KarteVerbindung(string Von, string Nach, string Text, string Status, string Art);
 public record KarteDaten(string Stand, List<ArtDef> Arten, List<UmfeldDef> Umfelder, List<KarteOrt> Orte,
     List<KarteEintrag> Eintraege, List<KarteVerbindung> Verbindungen);
@@ -73,10 +73,11 @@ public class Kartendaten(IServiceScopeFactory scopes, IOptions<ImportOptionen> o
             seed.Arten.Arten,
             seed.Regeln.Umfelder,
             orte.Where(o => genutzt.Contains(o.Key) || o.Symbol != null)
-                .Select(o => new KarteOrt(o.Key, o.Name, o.Lat!.Value, o.Lon!.Value, o.Genauigkeit, o.Symbol)).ToList(),
+                .Select(o => new KarteOrt(o.Key, o.Name, o.Adresse, o.Lat!.Value, o.Lon!.Value, o.Genauigkeit, o.Symbol)).ToList(),
             eintraege.Select(e => new KarteEintrag(e.Id, e.Name, e.Typ, e.Umfeld, e.Form, Text.ErsterSatz(e.Info),
                 e.OrtKey is { } k && ortName.ContainsKey(k) ? k : null,
                 e.OrtKey is { } k2 ? ortName.GetValueOrDefault(k2) : null,
+                e.Typ == "person" ? null : e.OrtGrund,
                 e.BildUrl, e.BildQuelle,
                 e.BildX is { } x && e.BildY is { } y ? new Ausschnitt(x, y, e.BildZoom ?? 1) : null)).ToList(),
             verbindungen.Select(v => new KarteVerbindung(v.VonId, v.NachId, v.Text, v.Status, v.Art)).ToList());

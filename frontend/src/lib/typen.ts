@@ -2,10 +2,10 @@ export type Typ = 'person' | 'org' | 'medium' | 'ereignis'
 
 export interface ArtDef { key: string; name: string; farbe: string; gestrichelt: boolean }
 export interface UmfeldDef { key: string; name: string; farbe: string }
-export interface KarteOrt { key: string; name: string; lat: number; lon: number; genauigkeit: string; symbol: string | null }
+export interface KarteOrt { key: string; name: string; adresse: string | null; lat: number; lon: number; genauigkeit: string; symbol: string | null }
 export interface KarteEintrag {
   id: string; name: string; typ: Typ; umfeld: string; form: string; kurz: string
-  ort: string | null; ortName: string | null; bild: string | null; bildQuelle: string | null
+  ort: string | null; ortName: string | null; ortGrund: string | null; bild: string | null; bildQuelle: string | null
   /** Gesichtsausschnitt: Mittelpunkt in Prozent, Vergrößerung (1 = ganzes Bild) */
   ausschnitt: { x: number; y: number; zoom: number } | null
 }

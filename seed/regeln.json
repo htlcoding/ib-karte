@@ -114,6 +114,11 @@
    "muster": "Thüringer Landtag|MdL.{0,40}Thüringen|Thüringen.{0,40}MdL|AfD-Fraktion(?:schef|svorsitz\\w*)? (?:in|im) Thüringen|Thüringer AfD-(?:Fraktions)?[Cc]hef|Fraktionschef in Thüringen",
    "ort": "landtag-thueringen",
    "grund": "Funktionsort Thüringer Landtag (Mandat laut Datensatz)"
+  },
+  {
+   "muster": "Landtagsabgeordnete[rn]? in Bayern|MdL[^.;]{0,30}Bayern|Bayerischen Landtag",
+   "ort": "bayerischer-landtag",
+   "grund": "Funktionsort Bayerischer Landtag (Mandat laut Datensatz)"
   }
  ],
  "rolleMuster": "Obmann|Obfrau|Geschäftsführ|Gesellschafter|Chefredakt|Redakt|Herausgeber|Leiter|Leitung|Gründer|Vorsitz|Sprecher|Vorstand|Betreiber|Präsident|Chef|Mandatar|Funktionär|Mitglied|Mitarbeiter|Kader|Aktivist|Autor|Moderator|Obmann|Kassier|Schriftführ|Eigentümer|Inhaber|Bundesleiter|Landesleiter|Kopf|Mitbegründer|Gesicht|Teil der|gehört",
@@ -179,6 +184,26 @@
    "ort": "schnellroda"
   },
   {
+   "name": "Kopenhagen",
+   "ort": "kopenhagen"
+  },
+  {
+   "name": "Klagenfurt",
+   "ort": "klagenfurt"
+  },
+  {
+   "name": "Washington",
+   "ort": "washington"
+  },
+  {
+   "name": "Düsseldorf",
+   "ort": "duesseldorf"
+  },
+  {
+   "name": "Regensburg",
+   "ort": "regensburg"
+  },
+  {
    "name": "Hörsching",
    "ort": "hoersching"
   },
@@ -211,6 +236,18 @@
    "ort": "strassburg"
   },
   {
+   "name": "Amsterdam",
+   "ort": "amsterdam"
+  },
+  {
+   "name": "Wiesbaden",
+   "ort": "wiesbaden"
+  },
+  {
+   "name": "Karlsruhe",
+   "ort": "karlsruhe"
+  },
+  {
    "name": "Steyregg",
    "ort": "steyregg"
   },
@@ -237,6 +274,18 @@
   {
    "name": "Budapest",
    "ort": "budapest"
+  },
+  {
+   "name": "Schwerin",
+   "ort": "schwerin"
+  },
+  {
+   "name": "Nürnberg",
+   "ort": "nuernberg"
+  },
+  {
+   "name": "Warschau",
+   "ort": "warschau"
   },
   {
    "name": "Potsdam",
@@ -315,6 +364,22 @@
    "ort": "london"
   },
   {
+   "name": "Madrid",
+   "ort": "madrid"
+  },
+  {
+   "name": "Ottawa",
+   "ort": "ottawa"
+  },
+  {
+   "name": "Moskau",
+   "ort": "moskau"
+  },
+  {
+   "name": "Dublin",
+   "ort": "dublin"
+  },
+  {
    "name": "Dabel",
    "ort": "dabel"
   },
@@ -367,10 +432,52 @@
    "ort": "como"
   },
   {
+   "name": "Prag",
+   "ort": "prag"
+  },
+  {
+   "name": "Bern",
+   "ort": "bern"
+  },
+  {
    "name": "Ulm",
    "ort": "ulm"
+  },
+  {
+   "name": "Rom",
+   "ort": "rom"
   }
  ],
  "amtAusschlussVorher": "Mitarbeiter|Interview|Büroleiter|traf|Empfang",
- "amtMaxPosition": 90
+ "amtMaxPosition": 90,
+ "hauptorte": {
+  "oesterreich-bundesweit": "wien",
+  "deutschland-bundesweit": "berlin",
+  "mecklenburg-vorpommern": "schwerin",
+  "frankreich": "paris",
+  "daenemark": "kopenhagen",
+  "grossbritannien": "london",
+  "flandern": "bruessel",
+  "schweiz": "bern",
+  "kaernten": "klagenfurt",
+  "niederlande": "amsterdam",
+  "italien": "rom",
+  "oberoesterreich": "linz",
+  "spanien": "madrid",
+  "norddeutschland": "hamburg",
+  "tschechien": "prag",
+  "steiermark": "graz",
+  "kanada": "ottawa",
+  "franken": "nuernberg",
+  "hessen": "wiesbaden",
+  "nordrhein-westfalen": "duesseldorf",
+  "usa": "washington",
+  "russland": "moskau",
+  "irland": "dublin",
+  "sachsen": "dresden",
+  "oberpfalz": "regensburg",
+  "serbien": "belgrad",
+  "polen": "warschau",
+  "baden": "karlsruhe"
+ }
 }

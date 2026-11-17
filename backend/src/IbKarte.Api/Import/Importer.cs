@@ -68,34 +68,14 @@ public class Importer(KarteDb db, ILogger<Importer> log)
             if (e.Status is not ("belegt" or "vorwurf")) { warn.Add($"Unbekannter Status „{e.Status}“: {e.Von} → {e.Nach}"); continue; }
             kanten.Add(e);
         }
-        // Orte der Nicht-Personen
-        var ortVon = new Dictionary<string, string>();
-        foreach (var n in netz.Nodes.Where(n => n.Typ != "person"))
-        {
-            if (seed.Zuordnung.TryGetValue(n.Id, out var k))
-            {
-                if (orte.ContainsKey(k)) ortVon[n.Id] = k;
-                else warn.Add($"Zuordnung auf unbekannten Ort: {n.Id} → {k}");
-            }
-        }
-        // Personen symbolisch verorten
-        var adj = knoten.Keys.ToDictionary(k => k, _ => new List<PersonenPosition.Kante>());
-        foreach (var e in kanten.Where(e => e.Status == "belegt"))
-        {
-            adj[e.Von].Add(new(e.Nach, e.Label));
-            adj[e.Nach].Add(new(e.Von, e.Label));
-        }
-        var grad = adj.ToDictionary(x => x.Key, x => x.Value.Count);
-        var genauigkeit = orte.ToDictionary(x => x.Key, x => x.Value.Genauigkeit);
-        var grund = new Dictionary<string, string>();
-        var ortAlle = new Dictionary<string, string>(ortVon);
-        foreach (var p in knoten.Values.Where(k => k.Typ == "person"))
-        {
-            var r = position.Bestimme(p, adj[p.Id], knoten, ortVon, genauigkeit, grad);
-            if (r is null) continue;
-            ortAlle[p.Id] = r.Value.Ort;
-            grund[p.Id] = r.Value.Grund;
-        }
+        // Orte bestimmen (Sitz laut Startdaten, sonst über Verbindungen; Personen symbolisch)
+        foreach (var z in seed.Zuordnung.Where(z => knoten.ContainsKey(z.Key) && !orte.ContainsKey(z.Value)))
+            warn.Add($"Zuordnung auf unbekannten Ort: {z.Key} → {z.Value}");
+        var belegt = kanten.Where(e => e.Status == "belegt").Select(e => new Verortung.Kante(e.Von, e.Nach, e.Label, arten.Art(e.Label))).ToList();
+        var verortung = Verortung.Berechne(knoten, belegt, seed.Zuordnung, orte.ToDictionary(x => x.Key, x => (x.Value.Genauigkeit, x.Value.Land)), position, seed.Regeln.Hauptorte);
+        var ortAlle = verortung.Ort;
+        var grund = verortung.Grund;
+        var grad = knoten.Keys.ToDictionary(k => k, k => belegt.Count(e => e.Von == k || e.Nach == k));
         foreach (var n in netz.Nodes.Where(n => !ortAlle.ContainsKey(n.Id) && grad[n.Id] > 0))
             warn.Add($"Ohne Ort: {n.Name}");
 
@@ -147,7 +127,7 @@ public class Importer(KarteDb db, ILogger<Importer> log)
         });
 
         var bericht = new ImportBericht(netz.Stand, seed.Orte.Count, knoten.Count, kanten.Count, netz.Quellen.Count,
-            grund.Count, netz.Nodes.Count(n => !ortAlle.ContainsKey(n.Id)), warn);
+            ortAlle.Keys.Count(k => knoten[k].Typ == "person"), netz.Nodes.Count(n => !ortAlle.ContainsKey(n.Id)), warn);
         log.LogInformation("Import fertig: {Eintraege} Einträge, {Verbindungen} Verbindungen, {Warnungen} Warnungen",
             bericht.Eintraege, bericht.Verbindungen, warn.Count);
         return bericht;
