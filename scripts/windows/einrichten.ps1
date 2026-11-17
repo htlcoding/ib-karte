@@ -72,6 +72,19 @@ try {
 
   # ---------- 3. Datenbank ----------
   Schritt 'Datenbank anlegen'
+  # Schon eingerichtet? Dann ist kein Administrator-Passwort nötig.
+  $env:PGPASSWORD = 'ibkarte'
+  $ErrorActionPreference = 'Continue'
+  $schonDa = & $psql.FullName -h localhost -U ibkarte -d ibkarte -tAc 'SELECT 1' 2>$null
+  $ErrorActionPreference = 'Stop'
+  Remove-Item Env:PGPASSWORD
+  if ($LASTEXITCODE -eq 0 -and "$schonDa".Trim() -eq '1') {
+    Ok 'Datenbank ibkarte bereits vorhanden'
+  } else {
+  if (-not $pgPasswort -and (Test-Path $Notizen)) {
+    $zeile = Get-Content $Notizen | Where-Object { $_ -match 'postgres\): (.+)$' } | Select-Object -First 1
+    if ($zeile -match 'postgres\): (.+)$') { $pgPasswort = $Matches[1].Trim() }
+  }
   if (-not $pgPasswort) {
     $sicher = Read-Host 'Passwort des PostgreSQL-Benutzers "postgres" (bei der PostgreSQL-Installation festgelegt)' -AsSecureString
     $pgPasswort = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($sicher))
@@ -83,6 +96,7 @@ try {
   if ($db -ne '1') { & $psql.FullName -h localhost -U postgres -d postgres -c "CREATE DATABASE ibkarte OWNER ibkarte"; Pruefe 'Datenbank anlegen' }
   Remove-Item Env:PGPASSWORD
   Ok 'Datenbank ibkarte bereit'
+  }
 
   # ---------- 4. Import ----------
   Schritt 'Daten importieren (beim ersten Mal lädt .NET Pakete, das dauert etwas)'
