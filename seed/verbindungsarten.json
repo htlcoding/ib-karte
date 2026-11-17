@@ -1,0 +1,113 @@
+{
+ "arten": [
+  {
+   "key": "funktion",
+   "name": "Funktion und Mitgliedschaft",
+   "farbe": "#222222",
+   "gestrichelt": false
+  },
+  {
+   "key": "struktur",
+   "name": "Organisation und Adresse",
+   "farbe": "#a8326e",
+   "gestrichelt": false
+  },
+  {
+   "key": "geld",
+   "name": "Geld und Firmen",
+   "farbe": "#3c8a3f",
+   "gestrichelt": false
+  },
+  {
+   "key": "medien",
+   "name": "Medien und Auftritte",
+   "farbe": "#c47f12",
+   "gestrichelt": false
+  },
+  {
+   "key": "veranstaltung",
+   "name": "Veranstaltungen",
+   "farbe": "#8a8a8a",
+   "gestrichelt": false
+  },
+  {
+   "key": "kontakt",
+   "name": "Zusammenarbeit und Unterstützung",
+   "farbe": "#3a8dbf",
+   "gestrichelt": false
+  },
+  {
+   "key": "indirekt",
+   "name": "Indirekt / Umfeld",
+   "farbe": "#9a9a9a",
+   "gestrichelt": true
+  }
+ ],
+ "standard": "kontakt",
+ "regeln": [
+  {
+   "art": "kontakt",
+   "muster": "keine (?:formale )?mitgliedschaft"
+  },
+  {
+   "art": "funktion",
+   "muster": "geschäftsführende[rn]? [\\w-]*(?:chef|obmann|obfrau|vorsitz|sprecher|leiter)"
+  },
+  {
+   "art": "medien",
+   "muster": "interview|podcast|gastbeitrag|youtube-gespräch|kolumne"
+  },
+  {
+   "art": "indirekt",
+   "muster": "milieu|personelle überschneid|assoziiert|zugeordnet|bruder|vorbild|früher aktiv|beide früher"
+  },
+  {
+   "art": "geld",
+   "muster": "inserat|inserent|einschaltung|onlineshop|shop"
+  },
+  {
+   "art": "struktur",
+   "muster": "schwester|mutterorg|vorgänger|teilorg|nebenorg|parteijugend|hervorgegangen|fortsetzung|studentenorg|tarnverein|ib-verein|anschrift|wohnte|folgeausgabe|ausgabe 20|übernommen|wahlkreisbüro"
+  },
+  {
+   "art": "funktion",
+   "muster": "initiator|stadträt|bundesrat|landesjugendsekretär|repräsentant|führungsfigur|leitung|vertreter|kameram|korrespondent|verantwortlich|gesicht|rückgrat|kameraleute|produziert|mitarbeit"
+  },
+  {
+   "art": "veranstaltung",
+   "muster": "diskutant|lesereise|unterzeichn|anmelder|delegation|ausrichter|nahmen .*teil|boxkampf|after party|kamingespräch|empfing|lud ihn|forum"
+  },
+  {
+   "art": "indirekt",
+   "muster": "verfahren|anlass|freispruch|gewertet|empfänger|debatte|bilanz|wechsel"
+  },
+  {
+   "art": "geld",
+   "muster": "gesellschaft|gmbh|geschäftsführ|eigentüm|sponsor|spend|finanz|konto|debank|kauf|miet|vermiet|immobil|betreiber|beteiligung|firmenbuch|handelsregister|kapital|zahl|förder|crowdfund|investor|verleger|verlag"
+  },
+  {
+   "art": "funktion",
+   "muster": "mitglied|leiter|sprecher|vorstand|obmann|obfrau|vorsitz|gründ|abgeordnet|mandatar|funktionär|mdb|mdl|mdep|generalsekretär|präsident|kassier|schriftführer|mitarbeiter|beschäftigt|angestellt|chef|direktor|referent(?!enliste)|aktivist|kader|stellvertret|landesrat|minister|klubobmann|bürgermeister|gemeinderat|stadtrat|kandidat|alter herr|bursch|fux|korporiert|tätig|manager|redakteur|chefredakteur|herausgeber|moderator|kopf|anführer|mitinitiator"
+  },
+  {
+   "art": "struktur",
+   "muster": "regionalgruppe|ortsgruppe|vorläufer|nachfolge|träger|jugendorganisation|teil (des|der|von)|untergliederung|ableger|dach|zweig|tochter|umbenenn|abspaltung|landesgruppe|sektion|projekt|hausprojekt|klublokal|lokal|sitz|adresse|räumlich|nutzt"
+  },
+  {
+   "art": "medien",
+   "muster": "gastbeitrag|interview|autor|podcast|medienpartner|beitrag|artikel|bericht|reporter|bewarb|beworben|video|kanal|sendung|stream|vortrag|redner|rede|hauptredner|auftritt|gast|zitiert|veröffentlich|publizi|kolumn|werbung|anzeige|buch|rezension|teilte|postete|verlinkt"
+  },
+  {
+   "art": "veranstaltung",
+   "muster": "teilnehm|teilnahme|veranstalt|aussteller|organisator|kongress|kundgebung|demo|aktion|treffen|feier|fest|konferenz|summit|sommerfest|stand|besuch|anwesend|anwesenheit|eingeladen|einladung|marsch|wanderung|seminar|schulung|akademie|lager|camp"
+  },
+  {
+   "art": "kontakt",
+   "muster": "kooperation|zusammenarbeit|unterstütz|partner|kontakt|bündnis|allianz|freund|solidar|vernetz|koordin|gemeinsam|kampagne|mitwirk|hilfe|beratung|berät|empfahl|empfehl|lobt|verteidig|schützt|anfrage|antrag|ordnungsruf"
+  },
+  {
+   "art": "indirekt",
+   "muster": "netzwerk|milieu|umfeld|vorbild|nähe|nahe|bezug|verbindung|ideolog|inspir|einfluss|vergleich|bezieht sich|übernahm|anknüpf|beobachtet|betroffen|genannt|erwähnt|laut"
+  }
+ ]
+}

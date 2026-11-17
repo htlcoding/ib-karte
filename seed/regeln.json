@@ -1,0 +1,376 @@
+{
+ "zentrumId": "ibo",
+ "umfelder": [
+  {
+   "key": "ib",
+   "name": "Identitäre Bewegung",
+   "farbe": "#b8322a"
+  },
+  {
+   "key": "fpoe",
+   "name": "FPÖ und Umfeld",
+   "farbe": "#2c5aa0"
+  },
+  {
+   "key": "medien",
+   "name": "Medien",
+   "farbe": "#c47f12"
+  },
+  {
+   "key": "firmen",
+   "name": "Firmen, Vereine, Verlage",
+   "farbe": "#6a4a96"
+  },
+  {
+   "key": "de",
+   "name": "Neue Rechte Deutschland",
+   "farbe": "#7b5534"
+  },
+  {
+   "key": "intl",
+   "name": "International",
+   "farbe": "#2b7a74"
+  },
+  {
+   "key": "ereignis",
+   "name": "Ereignisse und Verfahren",
+   "farbe": "#4a4a4a"
+  }
+ ],
+ "firmaMuster": "Verein|GmbH|\\bUG\\b|\\bOG\\b|FlexCo|& Co\\. KG|Verlag|Institut|Stiftung|Burschenschaft|Sängerschaft|Verbindung|Corps|Turnerbund|Landsmannschaft|Akademikerverband|Kollektiv|Store|Onlineshop|Spieleentwickler|e\\. V\\.|Werbeagentur|Solifonds|Hausprojekt",
+ "keineFirma": [
+  "a451",
+  "afd",
+  "castell",
+  "fbi",
+  "fj",
+  "fj_kaernten",
+  "fpo",
+  "gd",
+  "ibd",
+  "ibo",
+  "ja",
+  "kulturfestung",
+  "lukreta",
+  "rfs"
+ ],
+ "formen": [
+  {
+   "muster": "GmbH|\\bUG\\b|\\bOG\\b|FlexCo|& Co\\. KG|Immobilien",
+   "form": "Firma"
+  },
+  {
+   "muster": "Verlag|Edition",
+   "form": "Verlag"
+  },
+  {
+   "muster": "Burschenschaft|Sängerschaft|Corps|verbindung|Landsmannschaft|Turnerbund|Akademikerverband|Ring Freiheitlicher",
+   "form": "Korporation / Verband"
+  },
+  {
+   "muster": "Zentrum|Haus|Lokal|Keller|Castell|Kulturfestung|Rittergut|Quartier|Braukeller|Mühle|Staatsreparatur|Villa",
+   "form": "Lokal / Zentrum / Immobilie"
+  },
+  {
+   "muster": "Verein|e\\. V\\.|Stiftung|Institut",
+   "form": "Verein / Institut"
+  },
+  {
+   "muster": "^FPÖ$|^AfD$|Partei|Lega|Chega|VOX|Vlaams Belang|Forum voor|Dansk Folkeparti|SDS|Homeland|Restore Britain|National Party|Freie Sachsen|Mass-Voll|Junge SVP|Jugend|Junge Alternative|Generation Deutschland|Génération Zemmour",
+   "form": "Partei / Parteijugend"
+  },
+  {
+   "muster": "Onlineshop|Store|Label|Modelabel|Spieleentwickler|Werbeagentur",
+   "form": "Firma"
+  }
+ ],
+ "amt": [
+  {
+   "muster": "Nationalratsabgeordnete|Nationalratspräsident|NAbg|Abgeordnete[rn]? zum Nationalrat|(?:FPÖ-)?Bundesrat\\b|Bundesrätin|(?:ist|war|als|seit \\d{4})\\s+(?:FPÖ-)?(?:Nationalrats)?[Aa]bgeordnete[rn]?\\b(?! (?:im|zum) (?:Landtag|Europ))",
+   "ort": "parlament-wien",
+   "grund": "Funktionsort Parlament (Mandat im Nationalrat/Bundesrat laut Datensatz, ggf. früher)"
+  },
+  {
+   "muster": "Wiener (?:FPÖ-)?(?:Gemeinderat|Gemeinderätin|Stadtrat|Stadträtin|Landtagsabgeordnete[rn]?)|Wien[^.;]{0,60}Vizebürgermeister",
+   "ort": "rathaus-wien",
+   "grund": "Funktionsort Wiener Rathaus (Mandat im Gemeinderat/Landtag bzw. Stadtregierung laut Datensatz, ggf. früher)"
+  },
+  {
+   "muster": "Klubobmann Brigittenau|Bezirks(?:rat|rätin|vorsteher\\w*)[^.;]{0,30}Brigittenau",
+   "ort": "amtshaus-brigittenau",
+   "grund": "Funktionsort Bezirksvertretung Brigittenau (Mandat laut Datensatz)"
+  },
+  {
+   "muster": "\\bMdB\\b|Bundestagsabgeordnete",
+   "ort": "bundestag-berlin",
+   "grund": "Funktionsort Bundestag (Mandat laut Datensatz)"
+  },
+  {
+   "muster": "\\bMEP\\b|Europaabgeordnete|EU-Abgeordnete|Abgeordnete[rn]? im Europäischen Parlament",
+   "ort": "eu-parlament-strassburg",
+   "grund": "Funktionsort EU-Parlament (Mandat laut Datensatz)"
+  },
+  {
+   "muster": "Thüringer Landtag|MdL.{0,40}Thüringen|Thüringen.{0,40}MdL|AfD-Fraktion(?:schef|svorsitz\\w*)? (?:in|im) Thüringen|Thüringer AfD-(?:Fraktions)?[Cc]hef|Fraktionschef in Thüringen",
+   "ort": "landtag-thueringen",
+   "grund": "Funktionsort Thüringer Landtag (Mandat laut Datensatz)"
+  }
+ ],
+ "rolleMuster": "Obmann|Obfrau|Geschäftsführ|Gesellschafter|Chefredakt|Redakt|Herausgeber|Leiter|Leitung|Gründer|Vorsitz|Sprecher|Vorstand|Betreiber|Präsident|Chef|Mandatar|Funktionär|Mitglied|Mitarbeiter|Kader|Aktivist|Autor|Moderator|Obmann|Kassier|Schriftführ|Eigentümer|Inhaber|Bundesleiter|Landesleiter|Kopf|Mitbegründer|Gesicht|Teil der|gehört",
+ "staedte": [
+  {
+   "name": "Bernsdorf (Sachsen)",
+   "ort": "bernsdorf-sachsen"
+  },
+  {
+   "name": "Le Plessis-Robinson",
+   "ort": "le-plessis-robinson"
+  },
+  {
+   "name": "Vetschau/Spreewald",
+   "ort": "vetschau-spreewald"
+  },
+  {
+   "name": "Ribnitz-Damgarten",
+   "ort": "ribnitz-damgarten"
+  },
+  {
+   "name": "Eichkögl (Stmk.)",
+   "ort": "eichkoegl-stmk"
+  },
+  {
+   "name": "Hof bei Salzburg",
+   "ort": "hof-bei-salzburg"
+  },
+  {
+   "name": "Tegerfelden (AG)",
+   "ort": "tegerfelden-ag"
+  },
+  {
+   "name": "Wien-Margareten",
+   "ort": "wien-margareten"
+  },
+  {
+   "name": "Senden (Bayern)",
+   "ort": "senden-bayern"
+  },
+  {
+   "name": "Figueira da Foz",
+   "ort": "figueira-da-foz"
+  },
+  {
+   "name": "Baden bei Wien",
+   "ort": "baden-bei-wien"
+  },
+  {
+   "name": "Halle (Saale)",
+   "ort": "halle-saale"
+  },
+  {
+   "name": "Graal-Müritz",
+   "ort": "graal-mueritz"
+  },
+  {
+   "name": "Knittelfeld",
+   "ort": "knittelfeld"
+  },
+  {
+   "name": "Schnellroda",
+   "ort": "schnellroda"
+  },
+  {
+   "name": "Hörsching",
+   "ort": "hoersching"
+  },
+  {
+   "name": "Magdeburg",
+   "ort": "magdeburg"
+  },
+  {
+   "name": "Stuttgart",
+   "ort": "stuttgart"
+  },
+  {
+   "name": "Altenburg",
+   "ort": "altenburg"
+  },
+  {
+   "name": "Pforzheim",
+   "ort": "pforzheim"
+  },
+  {
+   "name": "Nürtingen",
+   "ort": "nuertingen"
+  },
+  {
+   "name": "Gallarate",
+   "ort": "gallarate"
+  },
+  {
+   "name": "Straßburg",
+   "ort": "strassburg"
+  },
+  {
+   "name": "Steyregg",
+   "ort": "steyregg"
+  },
+  {
+   "name": "Chemnitz",
+   "ort": "chemnitz"
+  },
+  {
+   "name": "Hannover",
+   "ort": "hannover"
+  },
+  {
+   "name": "Konstanz",
+   "ort": "konstanz"
+  },
+  {
+   "name": "Rottweil",
+   "ort": "rottweil"
+  },
+  {
+   "name": "Toulouse",
+   "ort": "toulouse"
+  },
+  {
+   "name": "Budapest",
+   "ort": "budapest"
+  },
+  {
+   "name": "Potsdam",
+   "ort": "potsdam"
+  },
+  {
+   "name": "München",
+   "ort": "muenchen"
+  },
+  {
+   "name": "Hamburg",
+   "ort": "hamburg"
+  },
+  {
+   "name": "Dresden",
+   "ort": "dresden"
+  },
+  {
+   "name": "Cottbus",
+   "ort": "cottbus"
+  },
+  {
+   "name": "Overath",
+   "ort": "overath"
+  },
+  {
+   "name": "Güstrow",
+   "ort": "guestrow"
+  },
+  {
+   "name": "Marburg",
+   "ort": "marburg"
+  },
+  {
+   "name": "Koblenz",
+   "ort": "koblenz"
+  },
+  {
+   "name": "Brüssel",
+   "ort": "bruessel"
+  },
+  {
+   "name": "Livorno",
+   "ort": "livorno"
+  },
+  {
+   "name": "Locarno",
+   "ort": "locarno"
+  },
+  {
+   "name": "Belgrad",
+   "ort": "belgrad"
+  },
+  {
+   "name": "Leoben",
+   "ort": "leoben"
+  },
+  {
+   "name": "Schwaz",
+   "ort": "schwaz"
+  },
+  {
+   "name": "Erfurt",
+   "ort": "erfurt"
+  },
+  {
+   "name": "Dasing",
+   "ort": "dasing"
+  },
+  {
+   "name": "Berlin",
+   "ort": "berlin"
+  },
+  {
+   "name": "London",
+   "ort": "london"
+  },
+  {
+   "name": "Dabel",
+   "ort": "dabel"
+  },
+  {
+   "name": "Paris",
+   "ort": "paris"
+  },
+  {
+   "name": "Rouen",
+   "ort": "rouen"
+  },
+  {
+   "name": "Lille",
+   "ort": "lille"
+  },
+  {
+   "name": "Wien",
+   "ort": "wien"
+  },
+  {
+   "name": "Graz",
+   "ort": "graz"
+  },
+  {
+   "name": "Linz",
+   "ort": "linz"
+  },
+  {
+   "name": "Wels",
+   "ort": "wels"
+  },
+  {
+   "name": "Kiel",
+   "ort": "kiel"
+  },
+  {
+   "name": "Genf",
+   "ort": "genf"
+  },
+  {
+   "name": "Lyon",
+   "ort": "lyon"
+  },
+  {
+   "name": "Gent",
+   "ort": "gent"
+  },
+  {
+   "name": "Como",
+   "ort": "como"
+  },
+  {
+   "name": "Ulm",
+   "ort": "ulm"
+  }
+ ],
+ "amtAusschlussVorher": "Mitarbeiter|Interview|Büroleiter|traf|Empfang",
+ "amtMaxPosition": 90
+}
