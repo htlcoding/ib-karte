@@ -103,6 +103,20 @@ Ohne Ausschnitt wird die obere Bildmitte genommen. Nur Bilder mit geklärten Rec
 Server, der das Bild ausliefert, muss CORS erlauben. Ohne Bild zeigt die Karte ein neutrales Profilbild bzw. ein
 Symbol.
 
+## Vorzeige-Version ohne Server
+
+Für eine statische Version (z. B. GitHub Pages, Cloudflare Pages) werden die Kartendaten als Dateien exportiert und das Frontend ohne API gebaut:
+
+```bash
+cd backend/src/IbKarte.Api
+dotnet run --no-launch-profile -- export              # schreibt frontend/public/statisch/karte.json + texte.json
+dotnet run --no-launch-profile -- export --nur-belegt # nur belegte Verbindungen, ohne „Nicht bestätigt“
+cd ../../../frontend
+npm run build:statisch                                # Ergebnis in frontend/dist-statisch/
+```
+
+`dist-statisch/` ist ein fertiger Ordner mit relativen Pfaden und läuft in jedem Unterverzeichnis. Die exportierten Daten sind nicht im Repo (`.gitignore`).
+
 ## API
 
 | Methode | Pfad | Zweck |

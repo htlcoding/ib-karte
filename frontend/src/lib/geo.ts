@@ -15,8 +15,32 @@ function polygone(f: Land): Position[][][] {
   return f.geometry.type === 'Polygon' ? [f.geometry.coordinates] : f.geometry.coordinates
 }
 
+/** Abstand (in Grad, Länge nach Breite gestaucht) von einem Punkt zur nächsten Kante eines Rings. */
+function abstand(x: number, y: number, ring: Position[]) {
+  const k = Math.cos((y * Math.PI) / 180)
+  let min = Infinity
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const ax = ring[j][0] * k, ay = ring[j][1], bx = ring[i][0] * k, by = ring[i][1], px = x * k
+    const dx = bx - ax, dy = by - ay, l = dx * dx + dy * dy
+    const s = l ? Math.max(0, Math.min(1, ((px - ax) * dx + (y - ay) * dy) / l)) : 0
+    min = Math.min(min, Math.hypot(px - ax - s * dx, y - ay - s * dy))
+  }
+  return min
+}
+
+/**
+ * Land eines Punktes. Liegt er knapp außerhalb jeder Fläche (Hafen- und Küstenstädte wie Kopenhagen oder Livorno
+ * fallen bei vereinfachten Umrissen ins Wasser), zählt das nächstgelegene Land im Umkreis von etwa 30 km.
+ */
 export function landVon(laender: Land[], lon: number, lat: number) {
-  return laender.find((f) => polygone(f).some((p) => imRing(lon, lat, p[0]) && !p.slice(1).some((h) => imRing(lon, lat, h))))
+  const drin = laender.find((f) => polygone(f).some((p) => imRing(lon, lat, p[0]) && !p.slice(1).some((h) => imRing(lon, lat, h))))
+  if (drin) return drin
+  let best: Land | undefined, min = 0.3
+  for (const f of laender) for (const p of polygone(f)) {
+    const d = abstand(lon, lat, p[0])
+    if (d < min) { min = d; best = f }
+  }
+  return best
 }
 
 /** Ring, der über die Datumsgrenze läuft (würde sonst quer über die Karte gezeichnet). */

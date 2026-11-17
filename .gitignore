@@ -7,3 +7,5 @@ daten/*.json
 .vs/
 .idea/
 *.user
+frontend/public/statisch/
+dist-statisch/

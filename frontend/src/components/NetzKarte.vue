@@ -329,7 +329,7 @@ function ebenen() {
 
 async function abdeckungLaden() {
   try {
-    const welt = await (await fetch('/laender.geojson')).json()
+    const welt = await (await fetch(`${import.meta.env.BASE_URL}laender.geojson`)).json()
     const punkte = netz.daten.orte.map((o) => [o.lon, o.lat] as [number, number])
     const { flaeche, umrisse } = abdeckung(welt, punkte)
     ;(map.getSource('abdeckung') as GeoJSONSource).setData(flaeche)

@@ -147,6 +147,14 @@ public static class Verortung
             var staat = ort.TryGetValue(p.Id, out var o2) ? StaatVon(o2) : Heimatland(p.Gruppe);
             if (!Anbinden(p.Id, true, staat, null)) Anbinden(p.Id, true, null, null);
         }
+        // 2b. Personen ohne jede Verbindung mit Ort: fest zugeordneter Ort aus dem Seed (Funktion bzw. Region laut Infotext).
+        foreach (var p in knoten.Values.Where(k => k.Typ == "person" && !ort.ContainsKey(k.Id)))
+            if (zuordnung.TryGetValue(p.Id, out var z) && orte.ContainsKey(z))
+            {
+                ort[p.Id] = z;
+                grund[p.Id] = "Ort der Funktion bzw. Region laut Infotext";
+            }
+
         // 3. Letzte Stufe: Stadt aus dem eigenen Infotext (im selben Land), sonst Hauptstadt der Region (symbolisch).
         foreach (var k in knoten.Values)
         {

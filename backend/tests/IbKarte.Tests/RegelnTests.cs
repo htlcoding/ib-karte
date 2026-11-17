@@ -99,6 +99,8 @@ public class RegelnTests
         string[] flaeche = ["land", "region", "aussen"];
         var flaechig = v.Ort.Where(x => flaeche.Contains(gen[x.Value]) && orteSeed[x.Value].Land?.StartsWith("Mittelmeer") != true).Select(x => x.Key).ToList();
         Assert.True(flaechig.Count == 0, "Noch ohne bestimmten Ort: " + string.Join(", ", flaechig));
+        var ohne = knoten.Keys.Where(id => !v.Ort.ContainsKey(id)).ToList();
+        Assert.True(ohne.Count == 0, "Ohne Ort (unsichtbar auf der Karte): " + string.Join(", ", ohne));
         Assert.Equal("afd-bundesgeschaeftsstelle", v.Ort["afd"]);
         Assert.Equal("rfj-bundesorganisation", v.Ort["fj"]);
         Assert.NotEqual("afd-bundesgeschaeftsstelle", v.Ort["ibd"]);

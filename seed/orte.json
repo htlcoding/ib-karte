@@ -850,8 +850,8 @@
   "key": "mittelmeer-schiffsaktion",
   "name": "Mittelmeer (Schiffsaktion)",
   "adresse": null,
-  "lat": 35.9,
-  "lon": 14.6,
+  "lat": 34.4,
+  "lon": 13.6,
   "genauigkeit": "region",
   "quelle": null,
   "quelleUrl": null,
@@ -1862,5 +1862,40 @@
   "quelle": "OpenStreetMap (Stadtmitte)",
   "quelleUrl": null,
   "land": "Baden-Württemberg"
+ },
+ {
+  "key": "innsbruck",
+  "name": "Innsbruck",
+  "adresse": null,
+  "lat": 47.2692,
+  "lon": 11.4041,
+  "genauigkeit": "gemeinde",
+  "quelle": "OpenStreetMap (Stadtmitte)",
+  "quelleUrl": null,
+  "land": "Tirol"
+ },
+ {
+  "key": "landtag-mecklenburg-vorpommern",
+  "name": "Landtag Mecklenburg-Vorpommern",
+  "adresse": "Schloss Schwerin, Lennéstraße 1, 19053 Schwerin",
+  "lat": 53.62403,
+  "lon": 11.41893,
+  "genauigkeit": "gebaeude",
+  "quelle": "OpenStreetMap",
+  "quelleUrl": null,
+  "land": "Mecklenburg-Vorpommern",
+  "symbol": "parlament"
+ },
+ {
+  "key": "handelsgericht-wien",
+  "name": "Handelsgericht Wien",
+  "adresse": "Handelsgericht Wien, Marxergasse 1a, 1030 Wien",
+  "lat": 48.2064,
+  "lon": 16.3926,
+  "genauigkeit": "gebaeude",
+  "quelle": "OpenStreetMap",
+  "quelleUrl": null,
+  "land": "Wien",
+  "symbol": "gericht"
  }
 ]

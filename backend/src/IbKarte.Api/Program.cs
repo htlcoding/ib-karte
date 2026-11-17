@@ -42,6 +42,26 @@ if (args.Length > 0 && args[0] == "import")
     return;
 }
 
+// ---------- Kommandozeile: dotnet IbKarte.Api.dll export <ordner> [--nur-belegt] ----------
+// Schreibt die Kartendaten als statische Dateien (für eine Vorzeige-Version ohne Server).
+if (args.Length > 0 && args[0] == "export")
+{
+    var ordner = args.Length > 1 && !args[1].StartsWith("--") ? args[1] : "../../../frontend/public/statisch";
+    var nurBelegt = args.Contains("--nur-belegt");
+    Directory.CreateDirectory(ordner);
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<KarteDb>();
+    var opt = scope.ServiceProvider.GetRequiredService<IOptions<ImportOptionen>>().Value;
+    var daten = await Kartendaten.BauenAsync(db, opt.SeedVerzeichnis, CancellationToken.None);
+    if (nurBelegt) daten = daten with { Verbindungen = daten.Verbindungen.Where(v => v.Status == "belegt").ToList() };
+    var json = new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web);
+    await File.WriteAllBytesAsync(Path.Combine(ordner, "karte.json"), System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(daten, json));
+    var texte = await db.Eintraege.AsNoTracking().ToDictionaryAsync(e => e.Id, e => e.Info);
+    await File.WriteAllBytesAsync(Path.Combine(ordner, "texte.json"), System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(texte, json));
+    Console.WriteLine($"Export nach {Path.GetFullPath(ordner)}: {daten.Eintraege.Count} Einträge, {daten.Verbindungen.Count} Verbindungen" + (nurBelegt ? " (nur belegte)" : ""));
+    return;
+}
+
 if (app.Configuration.GetValue("Datenbank:AutoMigrate", true))
 {
     using var scope = app.Services.CreateScope();
