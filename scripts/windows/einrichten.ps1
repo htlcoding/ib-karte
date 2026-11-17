@@ -100,6 +100,9 @@ try {
 
   # ---------- 4. Import ----------
   Schritt 'Daten importieren (beim ersten Mal lädt .NET Pakete, das dauert etwas)'
+  # Ein noch laufendes Backend sperrt die Programmdatei und verhindert den Neubau.
+  $alt = Get-Process -Name 'IbKarte.Api' -ErrorAction SilentlyContinue
+  if ($alt) { $alt | Stop-Process -Force; Start-Sleep -Seconds 1; Ok 'Laufendes Backend beendet' }
   Push-Location (Join-Path $Karte 'backend\src\IbKarte.Api')
   dotnet run --no-launch-profile -- import; $code = $LASTEXITCODE
   Pop-Location
